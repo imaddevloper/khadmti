@@ -1,0 +1,6 @@
+{
+  "name": "Khidmati",
+  "description": "Bilingual local-services marketplace for Algeria connecting customers with verified service providers.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
