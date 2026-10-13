@@ -1,5 +1,6 @@
 package com.example.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -13,7 +14,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.SyncAlt
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,12 +34,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.model.UserRole
-import com.example.ui.i18n.AppStrings
+import com.example.ui.theme.KhidmatiAmber
 import com.example.ui.theme.KhidmatiAmberLight
-import com.example.ui.theme.KhidmatiDarkGreen
-import com.example.ui.theme.KhidmatiLightGreen
-import com.example.ui.theme.KhidmatiPrimaryGreen
+import com.example.ui.theme.KhidmatiBorder
+import com.example.ui.theme.KhidmatiPrimary
+import com.example.ui.theme.KhidmatiPrimaryHover
+import com.example.ui.theme.KhidmatiPrimarySurface
+import com.example.ui.theme.KhidmatiRed
 import com.example.ui.theme.KhidmatiRedLight
+import com.example.ui.theme.KhidmatiSecondary
+import com.example.ui.theme.KhidmatiSecondarySurface
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -48,20 +55,23 @@ fun KhidmatiTopBar(
     canNavigateBack: Boolean,
     onNavigateBack: () -> Unit,
     onToggleLanguage: () -> Unit,
-    onOpenRoleSwitcher: () -> Unit
+    onOpenRoleSwitcher: () -> Unit,
+    onLogoutClick: () -> Unit
 ) {
+    val isArabic = currentLanguage == "ar"
+
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            titleContentColor = MaterialTheme.colorScheme.onSurface
+            containerColor = Color.White,
+            titleContentColor = Color(0xFF0F172A)
         ),
         title = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
                     modifier = Modifier
-                        .size(36.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(KhidmatiPrimaryGreen),
+                        .size(34.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(if (currentRole == UserRole.PROVIDER) KhidmatiSecondary else KhidmatiPrimary),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -71,10 +81,11 @@ fun KhidmatiTopBar(
                         fontSize = 18.sp
                     )
                 }
-                Spacer(modifier = Modifier.width(10.dp))
+                Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold),
+                    color = Color(0xFF0F172A)
                 )
             }
         },
@@ -83,78 +94,101 @@ fun KhidmatiTopBar(
                 IconButton(onClick = onNavigateBack) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back"
+                        contentDescription = "Back",
+                        tint = Color(0xFF0F172A)
                     )
                 }
             }
         },
         actions = {
-            // Language Toggle Button
+            // Language Toggle
             Surface(
                 shape = RoundedCornerShape(16.dp),
-                color = MaterialTheme.colorScheme.surfaceVariant,
+                color = Color(0xFFF8FAFC),
+                border = BorderStroke(1.dp, KhidmatiBorder),
                 modifier = Modifier
                     .clip(RoundedCornerShape(16.dp))
                     .clickable { onToggleLanguage() }
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Language,
                         contentDescription = "Language",
-                        modifier = Modifier.size(16.dp),
-                        tint = MaterialTheme.colorScheme.primary
+                        modifier = Modifier.size(14.dp),
+                        tint = KhidmatiPrimaryHover
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = if (currentLanguage == "ar") "عربي | EN" else "EN | عربي",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.SemiBold
+                        text = if (isArabic) "عربي" else "EN",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF334155)
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(6.dp))
 
-            // Role Switcher Chip
+            // Role Badge & Switcher Button
             val (roleColor, roleBg, roleLabel) = when (currentRole) {
-                UserRole.CUSTOMER -> Triple(KhidmatiPrimaryGreen, KhidmatiLightGreen, if (currentLanguage == "ar") "زبون" else "Customer")
-                UserRole.PROVIDER -> Triple(Color(0xFFB45309), KhidmatiAmberLight, if (currentLanguage == "ar") "حرفي" else "Provider")
-                UserRole.ADMIN -> Triple(Color(0xFFB91C1C), KhidmatiRedLight, if (currentLanguage == "ar") "مشرف" else "Admin")
-                UserRole.GUEST -> Triple(Color(0xFF4B5563), MaterialTheme.colorScheme.surfaceVariant, if (currentLanguage == "ar") "زائر" else "Guest")
+                UserRole.CUSTOMER -> Triple(KhidmatiPrimaryHover, KhidmatiPrimarySurface, if (isArabic) "حساب زبون" else "Client")
+                UserRole.PROVIDER -> Triple(KhidmatiSecondary, KhidmatiSecondarySurface, if (isArabic) "حساب عامل" else "Worker")
+                UserRole.ADMIN -> Triple(KhidmatiRed, KhidmatiRedLight, if (isArabic) "مشرف" else "Admin")
+                UserRole.GUEST -> Triple(Color(0xFF475569), Color(0xFFF1F5F9), if (isArabic) "زائر" else "Guest")
             }
 
             Surface(
                 shape = RoundedCornerShape(16.dp),
                 color = roleBg,
+                border = BorderStroke(1.dp, roleColor.copy(alpha = 0.3f)),
                 modifier = Modifier
                     .clip(RoundedCornerShape(16.dp))
                     .clickable { onOpenRoleSwitcher() }
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(14.dp)
+                            .size(8.dp)
                             .clip(CircleShape)
                             .background(roleColor)
                     )
-                    Spacer(modifier = Modifier.width(4.dp))
+                    Spacer(modifier = Modifier.width(5.dp))
                     Text(
                         text = roleLabel,
                         color = roleColor,
-                        fontSize = 12.sp,
+                        fontSize = 11.sp,
                         fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.width(3.dp))
+                    Icon(
+                        imageVector = Icons.Default.SyncAlt,
+                        contentDescription = "Switch",
+                        tint = roleColor,
+                        modifier = Modifier.size(12.dp)
                     )
                 }
             }
-            Spacer(modifier = Modifier.width(8.dp))
+
+            // Logout icon button to return to the selection/login screen
+            IconButton(
+                onClick = onLogoutClick,
+                modifier = Modifier.size(36.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Logout,
+                    contentDescription = "Logout",
+                    tint = Color(0xFF64748B),
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.width(4.dp))
         }
     )
 }

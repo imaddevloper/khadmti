@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 enum class AppDestination {
+    LOGIN_ROLE,
     HOME,
     SEARCH,
     REQUESTS,
@@ -38,7 +39,7 @@ enum class AppDestination {
 }
 
 data class KhidmatiUiState(
-    val currentDestination: AppDestination = AppDestination.HOME,
+    val currentDestination: AppDestination = AppDestination.LOGIN_ROLE,
     val selectedProviderId: String? = null,
     val selectedRequestId: String? = null,
     val selectedAppointmentId: String? = null,
@@ -145,6 +146,45 @@ class KhidmatiViewModel(
         val lang = currentLanguage.value
         val msg = if (lang == "ar") "تم التبديل إلى حساب: ${target.name}" else "Switched to persona: ${target.name}"
         emitMessage(msg)
+    }
+
+    fun loginAsCustomer(name: String, phone: String, wilayaCode: Int) {
+        val user = UserAccount(
+            id = "usr_cust_${System.currentTimeMillis()}",
+            name = if (name.isNotBlank()) name else "كريم بن علي",
+            emailOrPhone = if (phone.isNotBlank()) phone else "0550 12 34 56",
+            role = UserRole.CUSTOMER,
+            preferredLanguage = currentLanguage.value,
+            avatarInitials = if (name.isNotBlank()) name.take(1) else "ز"
+        )
+        repository.switchUser(user)
+        setWilayaFilter(wilayaCode)
+        navigateTo(AppDestination.HOME)
+        val lang = currentLanguage.value
+        emitMessage(if (lang == "ar") "مرحباً بك يا ${user.name}! تم تسجيل الدخول كزبون" else "Welcome ${user.name}! Logged in as Customer")
+    }
+
+    fun loginAsWorker(name: String, phone: String, tradeCategoryId: String, wilayaCode: Int) {
+        val user = UserAccount(
+            id = "usr_pro_${System.currentTimeMillis()}",
+            name = if (name.isNotBlank()) name else "ياسين منصوري (حرفي)",
+            emailOrPhone = if (phone.isNotBlank()) phone else "0661 98 76 54",
+            role = UserRole.PROVIDER,
+            preferredLanguage = currentLanguage.value,
+            avatarInitials = if (name.isNotBlank()) name.take(1) else "ع"
+        )
+        repository.switchUser(user)
+        setCategoryFilter(tradeCategoryId)
+        setWilayaFilter(wilayaCode)
+        navigateTo(AppDestination.PROVIDER_DASHBOARD)
+        val lang = currentLanguage.value
+        emitMessage(if (lang == "ar") "مرحباً بك يا ${user.name}! تم فتح لوحة تحكم العامل والحرفي" else "Welcome ${user.name}! Worker dashboard opened")
+    }
+
+    fun logoutToLoginScreen() {
+        navigateTo(AppDestination.LOGIN_ROLE)
+        val lang = currentLanguage.value
+        emitMessage(if (lang == "ar") "تم تسجيل الخروج. اختر صنف الدخول" else "Logged out. Choose persona to enter")
     }
 
     fun setSearchQuery(query: String) {

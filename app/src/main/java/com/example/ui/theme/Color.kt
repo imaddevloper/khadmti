@@ -2,26 +2,35 @@ package com.example.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Khidmati Algerian Marketplace Brand Palette
-val KhidmatiPrimaryGreen = Color(0xFF16834A)
-val KhidmatiDarkGreen = Color(0xFF0E5132)
-val KhidmatiLightGreen = Color(0xFFE8F5E9)
-val KhidmatiGreenAccent = Color(0xFF22C55E)
+// Modern, Fresh, Light Algerian Marketplace Palette
+val KhidmatiPrimary = Color(0xFF059669) // Fresh Emerald 600
+val KhidmatiPrimaryHover = Color(0xFF047857) // Emerald 700
+val KhidmatiPrimaryLight = Color(0xFF10B981) // Emerald 500
+val KhidmatiPrimarySurface = Color(0xFFECFDF5) // Very Soft Emerald 50
 
-val KhidmatiBackground = Color(0xFFF7F9F7)
-val KhidmatiSurface = Color(0xFFFFFFFF)
-val KhidmatiSurfaceVariant = Color(0xFFEFF2EE)
+val KhidmatiSecondary = Color(0xFF0284C7) // Sky 600
+val KhidmatiSecondaryLight = Color(0xFF38BDF8)
+val KhidmatiSecondarySurface = Color(0xFFF0F9FF) // Sky 50
 
-val KhidmatiTextPrimary = Color(0xFF18221C)
-val KhidmatiTextSecondary = Color(0xFF5E6B63)
-val KhidmatiTextMuted = Color(0xFF8C9890)
+val KhidmatiBackground = Color(0xFFF8FAFC) // Crisp Airy Slate 50
+val KhidmatiSurface = Color(0xFFFFFFFF) // Pure White Card Surface
+val KhidmatiSurfaceVariant = Color(0xFFF1F5F9) // Slate 100
 
-val KhidmatiAmber = Color(0xFFF59E0B)
-val KhidmatiAmberLight = Color(0xFFFEF3C7)
-val KhidmatiRed = Color(0xFFDC2626)
-val KhidmatiRedLight = Color(0xFFFEE2E2)
-val KhidmatiBlue = Color(0xFF2563EB)
-val KhidmatiBlueLight = Color(0xFFDBEAFE)
+val KhidmatiTextPrimary = Color(0xFF0F172A) // Deep Slate 900
+val KhidmatiTextSecondary = Color(0xFF334155) // Slate 700
+val KhidmatiTextMuted = Color(0xFF64748B) // Slate 500
 
-val KhidmatiOutline = Color(0xFFD6DDD7)
-val KhidmatiDivider = Color(0xFFE5E9E6)
+val KhidmatiAmber = Color(0xFFF59E0B) // Amber 500
+val KhidmatiAmberLight = Color(0xFFFFFBEB) // Amber 50
+val KhidmatiRed = Color(0xFFEF4444) // Red 500
+val KhidmatiRedLight = Color(0xFFFEF2F2) // Red 50
+
+val KhidmatiBorder = Color(0xFFE2E8F0) // Subtle Clean Hairline Border
+val KhidmatiDivider = Color(0xFFF1F5F9)
+
+// Backward-compatible aliases
+val KhidmatiPrimaryGreen = KhidmatiPrimary
+val KhidmatiDarkGreen = KhidmatiPrimaryHover
+val KhidmatiLightGreen = KhidmatiPrimarySurface
+val KhidmatiBlue = KhidmatiSecondary
+val KhidmatiBlueLight = KhidmatiSecondarySurface

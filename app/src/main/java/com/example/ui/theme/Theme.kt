@@ -2,51 +2,34 @@ package com.example.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-private val LightColorScheme = lightColorScheme(
-    primary = KhidmatiPrimaryGreen,
+private val ModernLightColorScheme = lightColorScheme(
+    primary = KhidmatiPrimary,
     onPrimary = Color.White,
-    primaryContainer = KhidmatiLightGreen,
-    onPrimaryContainer = KhidmatiDarkGreen,
-    secondary = KhidmatiDarkGreen,
+    primaryContainer = KhidmatiPrimarySurface,
+    onPrimaryContainer = KhidmatiPrimaryHover,
+    secondary = KhidmatiSecondary,
     onSecondary = Color.White,
-    secondaryContainer = KhidmatiSurfaceVariant,
-    onSecondaryContainer = KhidmatiTextPrimary,
+    secondaryContainer = KhidmatiSecondarySurface,
+    onSecondaryContainer = KhidmatiSecondary,
     tertiary = KhidmatiAmber,
     onTertiary = Color.White,
+    tertiaryContainer = KhidmatiAmberLight,
+    onTertiaryContainer = KhidmatiAmber,
     background = KhidmatiBackground,
     onBackground = KhidmatiTextPrimary,
     surface = KhidmatiSurface,
     onSurface = KhidmatiTextPrimary,
     surfaceVariant = KhidmatiSurfaceVariant,
-    onSurfaceVariant = KhidmatiTextSecondary,
-    outline = KhidmatiOutline,
+    onSurfaceVariant = KhidmatiTextMuted,
+    outline = KhidmatiBorder,
     error = KhidmatiRed,
     onError = Color.White,
     errorContainer = KhidmatiRedLight,
     onErrorContainer = KhidmatiRed
-)
-
-private val DarkColorScheme = darkColorScheme(
-    primary = KhidmatiGreenAccent,
-    onPrimary = Color.Black,
-    primaryContainer = KhidmatiDarkGreen,
-    onPrimaryContainer = KhidmatiLightGreen,
-    secondary = Color(0xFF6EE7B7),
-    onSecondary = Color.Black,
-    background = Color(0xFF111814),
-    onBackground = Color(0xFFE2E8E4),
-    surface = Color(0xFF19231E),
-    onSurface = Color(0xFFE2E8E4),
-    surfaceVariant = Color(0xFF222F29),
-    onSurfaceVariant = Color(0xFF9EABA3),
-    outline = Color(0xFF38473F),
-    error = Color(0xFFF87171),
-    onError = Color.Black
 )
 
 @Composable
@@ -54,9 +37,9 @@ fun KhidmatiTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
+    // Prioritize clean, bright, modern light aesthetic
     MaterialTheme(
-        colorScheme = colorScheme,
+        colorScheme = ModernLightColorScheme,
         typography = Typography,
         content = content
     )

@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.data.model.ServiceTaxonomy
+import com.example.data.model.UserRole
 import com.example.ui.components.KhidmatiBottomNav
 import com.example.ui.components.KhidmatiTopBar
 import com.example.ui.components.PersonaSwitcherDialog
@@ -30,6 +31,7 @@ import com.example.ui.screens.AppointmentsScreen
 import com.example.ui.screens.ConversationsScreen
 import com.example.ui.screens.FavoritesScreen
 import com.example.ui.screens.HomeScreen
+import com.example.ui.screens.LoginRoleScreen
 import com.example.ui.screens.ProviderDashboardScreen
 import com.example.ui.screens.ProviderDetailScreen
 import com.example.ui.screens.RequestCreateScreen
@@ -98,7 +100,9 @@ fun KhidmatiApp(
                 uiState.selectedRequestId?.let { viewModel.openRequestDetail(it) } ?: viewModel.navigateTo(AppDestination.REQUESTS)
             }
             AppDestination.WRITE_REVIEW -> viewModel.navigateTo(AppDestination.APPOINTMENTS)
-            else -> viewModel.navigateTo(AppDestination.HOME)
+            else -> viewModel.navigateTo(
+                if (currentUser.role == UserRole.PROVIDER) AppDestination.PROVIDER_DASHBOARD else AppDestination.HOME
+            )
         }
     }
 
@@ -106,24 +110,29 @@ fun KhidmatiApp(
         KhidmatiTheme {
             Scaffold(
                 topBar = {
-                    KhidmatiTopBar(
-                        title = AppStrings.appName(currentLang),
-                        currentLanguage = currentLang,
-                        currentRole = currentUser.role,
-                        userName = currentUser.name,
-                        canNavigateBack = isSubScreen,
-                        onNavigateBack = {
-                            when (uiState.currentDestination) {
-                                AppDestination.SEND_QUOTE -> {
-                                    uiState.selectedRequestId?.let { viewModel.openRequestDetail(it) } ?: viewModel.navigateTo(AppDestination.REQUESTS)
+                    if (uiState.currentDestination != AppDestination.LOGIN_ROLE) {
+                        KhidmatiTopBar(
+                            title = AppStrings.appName(currentLang),
+                            currentLanguage = currentLang,
+                            currentRole = currentUser.role,
+                            userName = currentUser.name,
+                            canNavigateBack = isSubScreen,
+                            onNavigateBack = {
+                                when (uiState.currentDestination) {
+                                    AppDestination.SEND_QUOTE -> {
+                                        uiState.selectedRequestId?.let { viewModel.openRequestDetail(it) } ?: viewModel.navigateTo(AppDestination.REQUESTS)
+                                    }
+                                    AppDestination.WRITE_REVIEW -> viewModel.navigateTo(AppDestination.APPOINTMENTS)
+                                    else -> viewModel.navigateTo(
+                                        if (currentUser.role == UserRole.PROVIDER) AppDestination.PROVIDER_DASHBOARD else AppDestination.HOME
+                                    )
                                 }
-                                AppDestination.WRITE_REVIEW -> viewModel.navigateTo(AppDestination.APPOINTMENTS)
-                                else -> viewModel.navigateTo(AppDestination.HOME)
-                            }
-                        },
-                        onToggleLanguage = { viewModel.toggleLanguage() },
-                        onOpenRoleSwitcher = { viewModel.showPersonaSwitcher(true) }
-                    )
+                            },
+                            onToggleLanguage = { viewModel.toggleLanguage() },
+                            onOpenRoleSwitcher = { viewModel.showPersonaSwitcher(true) },
+                            onLogoutClick = { viewModel.logoutToLoginScreen() }
+                        )
+                    }
                 },
                 bottomBar = {
                     KhidmatiBottomNav(
@@ -142,6 +151,24 @@ fun KhidmatiApp(
                         .padding(innerPadding)
                 ) {
                     when (uiState.currentDestination) {
+                        AppDestination.LOGIN_ROLE -> {
+                            LoginRoleScreen(
+                                currentLanguage = currentLang,
+                                wilayas = wilayas,
+                                categories = categories,
+                                onToggleLanguage = { viewModel.toggleLanguage() },
+                                onLoginCustomer = { name, phone, wCode ->
+                                    viewModel.loginAsCustomer(name, phone, wCode)
+                                },
+                                onLoginWorker = { name, phone, tradeId, wCode ->
+                                    viewModel.loginAsWorker(name, phone, tradeId, wCode)
+                                },
+                                onLoginAdmin = {
+                                    viewModel.switchUserRole(UserRole.ADMIN)
+                                }
+                            )
+                        }
+
                         AppDestination.HOME -> {
                             HomeScreen(
                                 currentLanguage = currentLang,
@@ -160,7 +187,7 @@ fun KhidmatiApp(
                                 onSearchClick = { viewModel.navigateTo(AppDestination.SEARCH) },
                                 onCreateRequestClick = { viewModel.navigateTo(AppDestination.CREATE_REQUEST) },
                                 onProviderClick = { viewModel.openProviderDetail(it) },
-                                onJoinProviderClick = { viewModel.switchUserRole(com.example.data.model.UserRole.PROVIDER) }
+                                onJoinProviderClick = { viewModel.switchUserRole(UserRole.PROVIDER) }
                             )
                         }
 

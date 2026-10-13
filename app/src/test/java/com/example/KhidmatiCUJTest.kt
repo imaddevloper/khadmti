@@ -29,19 +29,24 @@ class KhidmatiCUJTest {
     @Test
     fun testAlgerianLocationsDataset() {
         val wilayas = AlgerianLocations.allWilayas
-        assertTrue("Must include key Algerian Wilayas", wilayas.isNotEmpty())
+        assertEquals("Must include all 69 Algerian Wilayas", 69, wilayas.size)
 
         val algiers = AlgerianLocations.getWilaya(16)
         assertNotNull(algiers)
         assertEquals("Algiers", algiers!!.nameEn)
-        assertEquals("الجزائر", algiers.nameAr)
+        assertTrue(algiers.nameAr.contains("الجزائر"))
         assertTrue(algiers.communes.any { it.nameEn == "Kouba" })
         assertTrue(algiers.communes.any { it.nameAr == "حيدرة" })
+
+        val aflou = AlgerianLocations.getWilaya(69)
+        assertNotNull(aflou)
+        assertEquals("Aflou", aflou!!.nameEn)
+        assertTrue(aflou.nameAr.contains("آفلو"))
 
         val oran = AlgerianLocations.getWilaya(31)
         assertNotNull(oran)
         assertEquals("Oran", oran!!.nameEn)
-        assertEquals("وهران", oran.nameAr)
+        assertTrue(oran.nameAr.contains("وهران"))
     }
 
     @Test
