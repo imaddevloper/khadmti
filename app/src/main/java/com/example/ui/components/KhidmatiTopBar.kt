@@ -16,6 +16,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SyncAlt
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -56,14 +57,15 @@ fun KhidmatiTopBar(
     onNavigateBack: () -> Unit,
     onToggleLanguage: () -> Unit,
     onOpenRoleSwitcher: () -> Unit,
+    onOpenSettings: () -> Unit,
     onLogoutClick: () -> Unit
 ) {
     val isArabic = currentLanguage == "ar"
 
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.White,
-            titleContentColor = Color(0xFF0F172A)
+            containerColor = MaterialTheme.colorScheme.surface,
+            titleContentColor = MaterialTheme.colorScheme.onSurface
         ),
         title = {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -85,7 +87,7 @@ fun KhidmatiTopBar(
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold),
-                    color = Color(0xFF0F172A)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
         },
@@ -95,49 +97,18 @@ fun KhidmatiTopBar(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
-                        tint = Color(0xFF0F172A)
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
         },
         actions = {
-            // Language Toggle
-            Surface(
-                shape = RoundedCornerShape(16.dp),
-                color = Color(0xFFF8FAFC),
-                border = BorderStroke(1.dp, KhidmatiBorder),
-                modifier = Modifier
-                    .clip(RoundedCornerShape(16.dp))
-                    .clickable { onToggleLanguage() }
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Language,
-                        contentDescription = "Language",
-                        modifier = Modifier.size(14.dp),
-                        tint = KhidmatiPrimaryHover
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = if (isArabic) "عربي" else "EN",
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF334155)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.width(6.dp))
-
             // Role Badge & Switcher Button
             val (roleColor, roleBg, roleLabel) = when (currentRole) {
-                UserRole.CUSTOMER -> Triple(KhidmatiPrimaryHover, KhidmatiPrimarySurface, if (isArabic) "حساب زبون" else "Client")
-                UserRole.PROVIDER -> Triple(KhidmatiSecondary, KhidmatiSecondarySurface, if (isArabic) "حساب عامل" else "Worker")
+                UserRole.CUSTOMER -> Triple(KhidmatiPrimaryHover, KhidmatiPrimarySurface, if (isArabic) "زبون" else "Client")
+                UserRole.PROVIDER -> Triple(KhidmatiSecondary, KhidmatiSecondarySurface, if (isArabic) "عامل" else "Worker")
                 UserRole.ADMIN -> Triple(KhidmatiRed, KhidmatiRedLight, if (isArabic) "مشرف" else "Admin")
-                UserRole.GUEST -> Triple(Color(0xFF475569), Color(0xFFF1F5F9), if (isArabic) "زائر" else "Guest")
+                UserRole.GUEST -> Triple(Color(0xFF475569), MaterialTheme.colorScheme.surfaceVariant, if (isArabic) "زائر" else "Guest")
             }
 
             Surface(
@@ -154,7 +125,7 @@ fun KhidmatiTopBar(
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(8.dp)
+                            .size(7.dp)
                             .clip(CircleShape)
                             .background(roleColor)
                     )
@@ -170,25 +141,40 @@ fun KhidmatiTopBar(
                         imageVector = Icons.Default.SyncAlt,
                         contentDescription = "Switch",
                         tint = roleColor,
-                        modifier = Modifier.size(12.dp)
+                        modifier = Modifier.size(11.dp)
                     )
                 }
             }
 
-            // Logout icon button to return to the selection/login screen
+            Spacer(modifier = Modifier.width(4.dp))
+
+            // Settings button in Top Bar as requested!
+            IconButton(
+                onClick = onOpenSettings,
+                modifier = Modifier.size(38.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Settings,
+                    contentDescription = "Settings",
+                    tint = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+
+            // Quick Logout button
             IconButton(
                 onClick = onLogoutClick,
-                modifier = Modifier.size(36.dp)
+                modifier = Modifier.size(38.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.Logout,
                     contentDescription = "Logout",
-                    tint = Color(0xFF64748B),
+                    tint = Color(0xFF94A3B8),
                     modifier = Modifier.size(18.dp)
                 )
             }
 
-            Spacer(modifier = Modifier.width(4.dp))
+            Spacer(modifier = Modifier.width(2.dp))
         }
     )
 }

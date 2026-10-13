@@ -13,5 +13,7 @@ data class UserAccount(
     val emailOrPhone: String,
     val role: UserRole,
     val preferredLanguage: String = "ar", // "ar" or "en"
-    val avatarInitials: String = "خ"
+    val avatarInitials: String = "خ",
+    val wilayaCode: Int = 16,
+    val avatarEmoji: String = "👤"
 )

@@ -122,6 +122,19 @@ class KhidmatiRepository {
         )
     }
 
+    fun updateUserAccount(name: String, phone: String, emoji: String, wilayaCode: Int) {
+        _currentUser.update {
+            it.copy(
+                name = name,
+                emailOrPhone = phone,
+                avatarEmoji = emoji,
+                wilayaCode = wilayaCode,
+                avatarInitials = if (name.isNotBlank()) name.take(1) else it.avatarInitials
+            )
+        }
+        logAudit("UPDATE_PROFILE", "USER", _currentUser.value.id, "Updated profile: $name, $phone, Wilaya $wilayaCode")
+    }
+
     // Toggle favorite
     fun toggleFavorite(providerId: String) {
         _providers.update { list ->

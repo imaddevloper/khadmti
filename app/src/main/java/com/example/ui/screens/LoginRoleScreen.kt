@@ -1,15 +1,21 @@
 package com.example.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.ui.res.painterResource
+import com.example.R
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,8 +27,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AdminPanelSettings
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Engineering
 import androidx.compose.material.icons.filled.Handyman
@@ -31,7 +35,6 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Shield
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -42,13 +45,11 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -64,9 +65,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.model.ServiceCategory
-import com.example.data.model.UserRole
 import com.example.data.model.Wilaya
-import com.example.ui.theme.KhidmatiAmber
 import com.example.ui.theme.KhidmatiBorder
 import com.example.ui.theme.KhidmatiPrimary
 import com.example.ui.theme.KhidmatiPrimaryHover
@@ -82,11 +81,12 @@ fun LoginRoleScreen(
     categories: List<ServiceCategory>,
     onToggleLanguage: () -> Unit,
     onLoginCustomer: (name: String, phone: String, wilayaCode: Int) -> Unit,
-    onLoginWorker: (name: String, phone: String, tradeCategoryId: String, wilayaCode: Int) -> Unit,
-    onLoginAdmin: () -> Unit
+    onLoginWorker: (name: String, phone: String, tradeCategoryId: String, wilayaCode: Int) -> Unit
 ) {
-    // Selected Role: 0 for Customer, 1 for Worker
-    var selectedRoleIndex by remember { mutableIntStateOf(0) }
+    val isArabic = currentLanguage == "ar"
+
+    // Selected Role: 0 for Customer, 1 for Worker, or null initially
+    var selectedRoleIndex by remember { mutableStateOf<Int?>(null) }
 
     var fullName by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
@@ -100,14 +100,14 @@ fun LoginRoleScreen(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF8FAFC))
+            .background(MaterialTheme.colorScheme.background)
             .padding(horizontal = 20.dp)
             .testTag("login_role_screen"),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
             // Language Toggle bar
             Row(
@@ -116,8 +116,8 @@ fun LoginRoleScreen(
             ) {
                 Surface(
                     shape = RoundedCornerShape(20.dp),
-                    color = Color.White,
-                    border = BorderStroke(1.dp, KhidmatiBorder),
+                    color = MaterialTheme.colorScheme.surface,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                     modifier = Modifier
                         .clip(RoundedCornerShape(20.dp))
                         .clickable { onToggleLanguage() }
@@ -134,7 +134,7 @@ fun LoginRoleScreen(
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = if (currentLanguage == "ar") "عربي / Français" else "English / عربي",
+                            text = if (isArabic) "عربي / English" else "English / عربي",
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             color = KhidmatiPrimaryHover
@@ -143,49 +143,43 @@ fun LoginRoleScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             // Hero Brand Identity
             Box(
                 modifier = Modifier
-                    .size(68.dp)
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(
-                        Brush.linearGradient(
-                            colors = listOf(KhidmatiPrimary, KhidmatiPrimaryHover)
-                        )
-                    ),
+                    .size(76.dp)
+                    .clip(RoundedCornerShape(22.dp))
+                    .background(Color(0xFF0F5132)),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "خ",
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 36.sp
+                Image(
+                    painter = painterResource(id = R.drawable.mihnati_app_icon_1791931865125),
+                    contentDescription = "Mihnati Logo",
+                    modifier = Modifier.fillMaxSize()
                 )
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = if (currentLanguage == "ar") "خدمتي | KHIDMATI" else "Khidmati | خدمتي",
+                text = if (isArabic) "مهنتي | Mihnati" else "Mihnati | مهنتي",
                 style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.ExtraBold),
-                color = Color(0xFF0F172A)
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Text(
-                text = if (currentLanguage == "ar")
-                    "المنصة العصرية لربط الزبائن بأمهر الحرفيين في الجزائر"
+                text = if (isArabic)
+                    "سوق الحرفيين والخدمات المنزلية في الجزائر عبر 69 ولاية"
                 else
-                    "Modern Local Services & Craftsmen Marketplace in Algeria",
+                    "Algerian Craftsmen & Home Services Marketplace across 69 Wilayas",
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color(0xFF475569),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
             )
 
             Spacer(modifier = Modifier.height(6.dp))
 
-            // 69 Wilayas Badge
             Surface(
                 shape = RoundedCornerShape(12.dp),
                 color = KhidmatiPrimarySurface,
@@ -193,23 +187,20 @@ fun LoginRoleScreen(
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.LocationOn,
                         contentDescription = null,
                         tint = KhidmatiPrimary,
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier.size(15.dp)
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
-                        text = if (currentLanguage == "ar")
-                            "تغطية شاملة لجميع الـ 69 ولاية جزائرية"
-                        else
-                            "Covering all 69 Algerian Wilayas",
+                        text = if (isArabic) "متاح في جميع 69 ولاية جزائرية" else "Available in all 69 Algerian Wilayas",
                         color = KhidmatiPrimaryHover,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 12.sp
+                        fontSize = 11.sp
                     )
                 }
             }
@@ -219,39 +210,39 @@ fun LoginRoleScreen(
         item {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = if (currentLanguage == "ar") "حدد صنف حسابك للدخول:" else "Select your role to continue:",
+                    text = if (isArabic) "اختر نوع حسابك للمتابعة:" else "Select your account type:",
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    color = Color(0xFF1E293B)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    text = if (currentLanguage == "ar")
-                        "تختلف القائمة والخصائص بحسب اختيارك زبون أو عامل"
+                    text = if (isArabic)
+                        "حدد إن كنت تبحث عن خدمة لمنزلك أو تقدم خدماتك كعامل وحرفي"
                     else
-                        "The app menus and features adapt specifically to your chosen role",
+                        "Choose whether you are booking services or offering professional trade work",
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color(0xFF64748B)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
 
-        // ROLE CARD 1: Customer (زبون)
+        // CARD 1: أنا زبون (Customer)
         item {
             val isSelected = selectedRoleIndex == 0
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(18.dp))
+                    .clip(RoundedCornerShape(20.dp))
                     .clickable { selectedRoleIndex = 0 }
                     .testTag("role_card_customer"),
-                shape = RoundedCornerShape(18.dp),
+                shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = if (isSelected) Color(0xFFF0FDF4) else Color.White
+                    containerColor = if (isSelected) KhidmatiPrimarySurface else MaterialTheme.colorScheme.surface
                 ),
                 border = BorderStroke(
                     width = if (isSelected) 2.dp else 1.dp,
-                    color = if (isSelected) KhidmatiPrimary else KhidmatiBorder
+                    color = if (isSelected) KhidmatiPrimary else MaterialTheme.colorScheme.outline
                 ),
-                elevation = CardDefaults.cardElevation(defaultElevation = if (isSelected) 3.dp else 1.dp)
+                elevation = CardDefaults.cardElevation(defaultElevation = if (isSelected) 4.dp else 1.dp)
             ) {
                 Column(modifier = Modifier.padding(18.dp)) {
                     Row(
@@ -262,30 +253,30 @@ fun LoginRoleScreen(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Box(
                                 modifier = Modifier
-                                    .size(44.dp)
+                                    .size(48.dp)
                                     .clip(CircleShape)
-                                    .background(if (isSelected) KhidmatiPrimary else Color(0xFFE2E8F0)),
+                                    .background(if (isSelected) KhidmatiPrimary else MaterialTheme.colorScheme.surfaceVariant),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Person,
                                     contentDescription = null,
-                                    tint = if (isSelected) Color.White else Color(0xFF475569),
-                                    modifier = Modifier.size(24.dp)
+                                    tint = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(26.dp)
                                 )
                             }
-                            Spacer(modifier = Modifier.width(12.dp))
+                            Spacer(modifier = Modifier.width(14.dp))
                             Column {
                                 Text(
-                                    text = if (currentLanguage == "ar") "أنا زبون (طالب خدمة)" else "I am a Client (Seeking Service)",
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 16.sp,
-                                    color = if (isSelected) KhidmatiPrimaryHover else Color(0xFF0F172A)
+                                    text = if (isArabic) "أنا زبون" else "I am a Client",
+                                    fontWeight = FontWeight.ExtraBold,
+                                    fontSize = 18.sp,
+                                    color = if (isSelected) KhidmatiPrimaryHover else MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
-                                    text = if (currentLanguage == "ar") "أبحث عن حرفيين ومهنيين لبيتي" else "Looking for verified craftspeople",
+                                    text = if (isArabic) "أبحث عن حرفيين لبيتي وطلب خدمات" else "Looking to hire verified craftsmen",
                                     fontSize = 12.sp,
-                                    color = Color(0xFF64748B)
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
@@ -295,48 +286,44 @@ fun LoginRoleScreen(
                                 imageVector = Icons.Default.CheckCircle,
                                 contentDescription = null,
                                 tint = KhidmatiPrimary,
-                                modifier = Modifier.size(24.dp)
+                                modifier = Modifier.size(26.dp)
                             )
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
 
-                    // Feature highlights
-                    RoleBullet(
-                        text = if (currentLanguage == "ar") "تصفح الحرفيين في ولايتك وحسب بلديتك" else "Browse verified pros in your Wilaya & Commune",
-                        color = KhidmatiPrimary
-                    )
-                    RoleBullet(
-                        text = if (currentLanguage == "ar") "انشر طلبات الإصلاح وقارن عروض الأسعار" else "Post repair requests and compare formal quotes",
-                        color = KhidmatiPrimary
-                    )
-                    RoleBullet(
-                        text = if (currentLanguage == "ar") "تثبيت المواعيد وتقييم الخدمة بعد الانتهاء" else "Confirm appointments & post verified reviews",
-                        color = KhidmatiPrimary
+                    Text(
+                        text = if (isArabic)
+                            "• تصفح الحرفيين في ولايتك • نشر طلبات مجانية • مقارنة عروض الأسعار • تقييمات موثقة"
+                        else
+                            "• Browse local pros • Post requests • Compare quotes in DZD • Verified reviews",
+                        fontSize = 11.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        lineHeight = 16.sp
                     )
                 }
             }
         }
 
-        // ROLE CARD 2: Worker / Craftsman (عامل / صاحب عمل)
+        // CARD 2: أنا عامل (Worker / Craftsman)
         item {
             val isSelected = selectedRoleIndex == 1
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(18.dp))
+                    .clip(RoundedCornerShape(20.dp))
                     .clickable { selectedRoleIndex = 1 }
                     .testTag("role_card_worker"),
-                shape = RoundedCornerShape(18.dp),
+                shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = if (isSelected) Color(0xFFF0F9FF) else Color.White
+                    containerColor = if (isSelected) KhidmatiSecondarySurface else MaterialTheme.colorScheme.surface
                 ),
                 border = BorderStroke(
                     width = if (isSelected) 2.dp else 1.dp,
-                    color = if (isSelected) KhidmatiSecondary else KhidmatiBorder
+                    color = if (isSelected) KhidmatiSecondary else MaterialTheme.colorScheme.outline
                 ),
-                elevation = CardDefaults.cardElevation(defaultElevation = if (isSelected) 3.dp else 1.dp)
+                elevation = CardDefaults.cardElevation(defaultElevation = if (isSelected) 4.dp else 1.dp)
             ) {
                 Column(modifier = Modifier.padding(18.dp)) {
                     Row(
@@ -347,30 +334,30 @@ fun LoginRoleScreen(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Box(
                                 modifier = Modifier
-                                    .size(44.dp)
+                                    .size(48.dp)
                                     .clip(CircleShape)
-                                    .background(if (isSelected) KhidmatiSecondary else Color(0xFFE2E8F0)),
+                                    .background(if (isSelected) KhidmatiSecondary else MaterialTheme.colorScheme.surfaceVariant),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Engineering,
                                     contentDescription = null,
-                                    tint = if (isSelected) Color.White else Color(0xFF475569),
-                                    modifier = Modifier.size(24.dp)
+                                    tint = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(26.dp)
                                 )
                             }
-                            Spacer(modifier = Modifier.width(12.dp))
+                            Spacer(modifier = Modifier.width(14.dp))
                             Column {
                                 Text(
-                                    text = if (currentLanguage == "ar") "أنا عامل / حرفي (مقدم خدمة)" else "I am a Worker / Pro (Offering Service)",
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 16.sp,
-                                    color = if (isSelected) KhidmatiSecondary else Color(0xFF0F172A)
+                                    text = if (isArabic) "أنا عامل" else "I am a Worker",
+                                    fontWeight = FontWeight.ExtraBold,
+                                    fontSize = 18.sp,
+                                    color = if (isSelected) KhidmatiSecondary else MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
-                                    text = if (currentLanguage == "ar") "استقبل طلبات الزبائن وزد دخلك" else "Receive client jobs & send quotes",
+                                    text = if (isArabic) "أريد تقديم خدماتي واستقبال طلبات الزبائن" else "Offer trade services & get hired",
                                     fontSize = 12.sp,
-                                    color = Color(0xFF64748B)
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
@@ -380,132 +367,136 @@ fun LoginRoleScreen(
                                 imageVector = Icons.Default.CheckCircle,
                                 contentDescription = null,
                                 tint = KhidmatiSecondary,
-                                modifier = Modifier.size(24.dp)
+                                modifier = Modifier.size(26.dp)
                             )
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
 
-                    RoleBullet(
-                        text = if (currentLanguage == "ar") "استقبال إشعارات بطلبات العمل في تخصصك" else "Receive instant notifications for jobs in your trade",
-                        color = KhidmatiSecondary
-                    )
-                    RoleBullet(
-                        text = if (currentLanguage == "ar") "تقديم عروض أسعار مفصلة بالدينار الجزائري" else "Submit formal structured quotes in DZD",
-                        color = KhidmatiSecondary
-                    )
-                    RoleBullet(
-                        text = if (currentLanguage == "ar") "إدارة جدول التدخلات والحصول على شارة التوثيق" else "Manage schedule & gain verified professional badge",
-                        color = KhidmatiSecondary
+                    Text(
+                        text = if (isArabic)
+                            "• استقبال طلبات العمل في تخصصك • تقديم عروض أسعار • إدارة المواعيد • توثيق الحساب"
+                        else
+                            "• Inbound client jobs • Submit quotes • Manage appointments • Professional badge",
+                        fontSize = 11.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        lineHeight = 16.sp
                     )
                 }
             }
         }
 
-        // Credentials / Details Form
+        // Animated Info Form revealed upon selecting a role
         item {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                border = BorderStroke(1.dp, KhidmatiBorder)
+            AnimatedVisibility(
+                visible = selectedRoleIndex != null,
+                enter = expandVertically() + fadeIn(),
+                exit = shrinkVertically() + fadeOut()
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        text = if (currentLanguage == "ar") "معلومات الدخول والموقع" else "Account Details & Location",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp,
-                        color = Color(0xFF1E293B)
-                    )
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(18.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+                ) {
+                    Column(modifier = Modifier.padding(18.dp)) {
+                        Text(
+                            text = if (selectedRoleIndex == 0)
+                                (if (isArabic) "بيانات الزبون والموقع" else "Client Information")
+                            else
+                                (if (isArabic) "بيانات العامل والتخصص" else "Worker & Trade Details"),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(14.dp))
 
-                    // Name
-                    OutlinedTextField(
-                        value = fullName,
-                        onValueChange = { fullName = it },
-                        label = { Text(if (currentLanguage == "ar") "الاسم واللقب" else "Full Name") },
-                        placeholder = {
-                            Text(
-                                if (selectedRoleIndex == 0)
-                                    (if (currentLanguage == "ar") "مثال: كريم بن علي" else "e.g. Karim Benali")
-                                else
-                                    (if (currentLanguage == "ar") "مثال: ياسين منصوري" else "e.g. Yacine Mansouri")
-                            )
-                        },
-                        leadingIcon = { Icon(Icons.Default.Person, contentDescription = null, tint = Color(0xFF64748B)) },
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .testTag("input_login_name")
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    // Phone
-                    OutlinedTextField(
-                        value = phoneNumber,
-                        onValueChange = { phoneNumber = it },
-                        label = { Text(if (currentLanguage == "ar") "رقم الهاتف (الجزائر)" else "Phone Number") },
-                        placeholder = { Text("0550 12 34 56") },
-                        leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null, tint = Color(0xFF64748B)) },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .testTag("input_login_phone")
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    // Wilaya Selector (All 69 Wilayas)
-                    ExposedDropdownMenuBox(
-                        expanded = wilayaExpanded,
-                        onExpandedChange = { wilayaExpanded = !wilayaExpanded }
-                    ) {
+                        // Full Name
                         OutlinedTextField(
-                            value = selectedWilaya.let { if (currentLanguage == "ar") it.nameAr else "${it.code} - ${it.nameEn}" },
-                            onValueChange = {},
-                            readOnly = true,
-                            label = { Text(if (currentLanguage == "ar") "الولاية (اختر من 69 ولاية)" else "Wilaya (Select from 69 Wilayas)") },
-                            leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null, tint = KhidmatiPrimary) },
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = wilayaExpanded) },
+                            value = fullName,
+                            onValueChange = { fullName = it },
+                            label = { Text(if (isArabic) "الاسم واللقب" else "Full Name") },
+                            placeholder = {
+                                Text(
+                                    if (selectedRoleIndex == 0)
+                                        (if (isArabic) "مثال: كريم بن علي" else "e.g. Karim Benali")
+                                    else
+                                        (if (isArabic) "مثال: ياسين منصوري" else "e.g. Yacine Mansouri")
+                                )
+                            },
+                            leadingIcon = { Icon(Icons.Default.Person, contentDescription = null, tint = KhidmatiPrimary) },
                             shape = RoundedCornerShape(12.dp),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .menuAnchor()
-                                .testTag("dropdown_login_wilaya")
+                                .testTag("input_login_name")
                         )
-                        ExposedDropdownMenu(
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        // Phone
+                        OutlinedTextField(
+                            value = phoneNumber,
+                            onValueChange = { phoneNumber = it },
+                            label = { Text(if (isArabic) "رقم الهاتف (الجزائر)" else "Phone Number") },
+                            placeholder = { Text("0550 12 34 56") },
+                            leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null, tint = KhidmatiPrimary) },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .testTag("input_login_phone")
+                        )
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        // Wilaya Selector (All 69 Wilayas)
+                        ExposedDropdownMenuBox(
                             expanded = wilayaExpanded,
-                            onDismissRequest = { wilayaExpanded = false }
+                            onExpandedChange = { wilayaExpanded = !wilayaExpanded }
                         ) {
-                            wilayas.forEach { w ->
-                                DropdownMenuItem(
-                                    text = { Text(text = if (currentLanguage == "ar") w.nameAr else "${w.code} - ${w.nameEn}") },
-                                    onClick = {
-                                        selectedWilaya = w
-                                        wilayaExpanded = false
-                                    }
-                                )
+                            OutlinedTextField(
+                                value = if (isArabic) selectedWilaya.nameAr else "${selectedWilaya.code} - ${selectedWilaya.nameEn}",
+                                onValueChange = {},
+                                readOnly = true,
+                                label = { Text(if (isArabic) "الولاية (اختر من بين 69 ولاية)" else "Wilaya (from 69 Wilayas)") },
+                                leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null, tint = KhidmatiPrimary) },
+                                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = wilayaExpanded) },
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .menuAnchor()
+                                    .testTag("dropdown_login_wilaya")
+                            )
+                            ExposedDropdownMenu(
+                                expanded = wilayaExpanded,
+                                onDismissRequest = { wilayaExpanded = false }
+                            ) {
+                                wilayas.forEach { w ->
+                                    DropdownMenuItem(
+                                        text = { Text(text = if (isArabic) w.nameAr else "${w.code} - ${w.nameEn}") },
+                                        onClick = {
+                                            selectedWilaya = w
+                                            wilayaExpanded = false
+                                        }
+                                    )
+                                }
                             }
                         }
-                    }
 
-                    // If Worker, ask for Trade Category
-                    AnimatedVisibility(visible = selectedRoleIndex == 1) {
-                        Column {
-                            Spacer(modifier = Modifier.height(10.dp))
+                        // If Worker, show Trade Category
+                        if (selectedRoleIndex == 1) {
+                            Spacer(modifier = Modifier.height(12.dp))
                             ExposedDropdownMenuBox(
                                 expanded = tradeExpanded,
                                 onExpandedChange = { tradeExpanded = !tradeExpanded }
                             ) {
                                 OutlinedTextField(
-                                    value = if (currentLanguage == "ar") selectedTradeCategory.nameAr else selectedTradeCategory.nameEn,
+                                    value = if (isArabic) selectedTradeCategory.nameAr else selectedTradeCategory.nameEn,
                                     onValueChange = {},
                                     readOnly = true,
-                                    label = { Text(if (currentLanguage == "ar") "تخصصك المهني والحرفي" else "Your Trade / Profession") },
+                                    label = { Text(if (isArabic) "تخصصك المهني والحرفي" else "Trade Profession") },
                                     leadingIcon = { Icon(Icons.Default.Handyman, contentDescription = null, tint = KhidmatiSecondary) },
                                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = tradeExpanded) },
                                     shape = RoundedCornerShape(12.dp),
@@ -520,7 +511,7 @@ fun LoginRoleScreen(
                                 ) {
                                     categories.forEach { cat ->
                                         DropdownMenuItem(
-                                            text = { Text(if (currentLanguage == "ar") cat.nameAr else cat.nameEn) },
+                                            text = { Text(if (isArabic) cat.nameAr else cat.nameEn) },
                                             onClick = {
                                                 selectedTradeCategory = cat
                                                 tradeExpanded = false
@@ -530,96 +521,49 @@ fun LoginRoleScreen(
                                 }
                             }
                         }
+
+                        Spacer(modifier = Modifier.height(18.dp))
+
+                        // Primary Action: Login
+                        Button(
+                            onClick = {
+                                if (selectedRoleIndex == 0) {
+                                    onLoginCustomer(
+                                        fullName.ifBlank { "كريم بن علي" },
+                                        phoneNumber.ifBlank { "0550 12 34 56" },
+                                        selectedWilaya.code
+                                    )
+                                } else {
+                                    onLoginWorker(
+                                        fullName.ifBlank { "ياسين منصوري (حرفي)" },
+                                        phoneNumber.ifBlank { "0661 98 76 54" },
+                                        selectedTradeCategory.id,
+                                        selectedWilaya.code
+                                    )
+                                }
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (selectedRoleIndex == 0) KhidmatiPrimary else KhidmatiSecondary
+                            ),
+                            shape = RoundedCornerShape(14.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(52.dp)
+                                .testTag("btn_submit_login_role")
+                        ) {
+                            Text(
+                                text = if (selectedRoleIndex == 0)
+                                    (if (isArabic) "تسجيل الدخول كزبون ومتابعة" else "Enter as Client")
+                                else
+                                    (if (isArabic) "تسجيل الدخول كعامل ومتابعة" else "Enter as Worker"),
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
                 }
             }
+            Spacer(modifier = Modifier.height(24.dp))
         }
-
-        // Primary Action: Submit Login
-        item {
-            Button(
-                onClick = {
-                    if (selectedRoleIndex == 0) {
-                        onLoginCustomer(
-                            fullName.ifBlank { "كريم بن علي" },
-                            phoneNumber.ifBlank { "0550 12 34 56" },
-                            selectedWilaya.code
-                        )
-                    } else {
-                        onLoginWorker(
-                            fullName.ifBlank { "ياسين منصوري (حرفي)" },
-                            phoneNumber.ifBlank { "0661 98 76 54" },
-                            selectedTradeCategory.id,
-                            selectedWilaya.code
-                        )
-                    }
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (selectedRoleIndex == 0) KhidmatiPrimary else KhidmatiSecondary
-                ),
-                shape = RoundedCornerShape(14.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(52.dp)
-                    .testTag("btn_submit_login_role")
-            ) {
-                Text(
-                    text = if (selectedRoleIndex == 0)
-                        (if (currentLanguage == "ar") "الدخول وتصفح الخدمات كزبون" else "Enter as Client")
-                    else
-                        (if (currentLanguage == "ar") "الدخول كعامل وحرفي مهني" else "Enter as Worker / Pro"),
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-        }
-
-        // Admin Access Link
-        item {
-            OutlinedButton(
-                onClick = onLoginAdmin,
-                shape = RoundedCornerShape(12.dp),
-                border = BorderStroke(1.dp, Color(0xFFCBD5E1)),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag("btn_admin_login")
-            ) {
-                Icon(
-                    imageVector = Icons.Default.AdminPanelSettings,
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp),
-                    tint = Color(0xFF475569)
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(
-                    text = if (currentLanguage == "ar") "دخول المشرفين والإدارة (مركز الاعتماد والرقابة)" else "Admin / Moderation Access",
-                    color = Color(0xFF475569),
-                    fontSize = 12.sp
-                )
-            }
-            Spacer(modifier = Modifier.height(20.dp))
-        }
-    }
-}
-
-@Composable
-private fun RoleBullet(text: String, color: Color) {
-    Row(
-        modifier = Modifier.padding(vertical = 2.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Box(
-            modifier = Modifier
-                .size(6.dp)
-                .clip(CircleShape)
-                .background(color)
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            text = text,
-            fontSize = 12.sp,
-            color = Color(0xFF334155),
-            lineHeight = 16.sp
-        )
     }
 }

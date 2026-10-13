@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 enum class AppDestination {
+    SPLASH,
     LOGIN_ROLE,
     HOME,
     SEARCH,
@@ -35,11 +36,14 @@ enum class AppDestination {
     REQUEST_DETAIL,
     SEND_QUOTE,
     WRITE_REVIEW,
-    VERIFICATION_CENTER
+    VERIFICATION_CENTER,
+    SETTINGS,
+    EDIT_PROFILE
 }
 
 data class KhidmatiUiState(
-    val currentDestination: AppDestination = AppDestination.LOGIN_ROLE,
+    val currentDestination: AppDestination = AppDestination.SPLASH,
+    val isDarkMode: Boolean = false,
     val selectedProviderId: String? = null,
     val selectedRequestId: String? = null,
     val selectedAppointmentId: String? = null,
@@ -97,6 +101,10 @@ class KhidmatiViewModel(
         }
     }
 
+    fun finishSplash() {
+        _uiState.update { it.copy(currentDestination = AppDestination.LOGIN_ROLE) }
+    }
+
     fun openSendQuote(requestId: String) {
         _uiState.update {
             it.copy(
@@ -120,6 +128,37 @@ class KhidmatiViewModel(
         val next = if (current == "ar") "en" else "ar"
         repository.setLanguage(next)
         emitMessage(if (next == "ar") "تم تفعيل اللغة العربية" else "English language selected")
+    }
+
+    fun setLanguage(lang: String) {
+        repository.setLanguage(lang)
+        emitMessage(if (lang == "ar") "تم تفعيل اللغة العربية" else "English language selected")
+    }
+
+    fun toggleDarkMode() {
+        val next = !_uiState.value.isDarkMode
+        _uiState.update { it.copy(isDarkMode = next) }
+        val lang = currentLanguage.value
+        emitMessage(if (next) (if (lang == "ar") "تم تفعيل الوضع المظلم" else "Dark mode enabled") else (if (lang == "ar") "تم تفعيل الوضع الفاتح" else "Light mode enabled"))
+    }
+
+    fun setDarkMode(dark: Boolean) {
+        _uiState.update { it.copy(isDarkMode = dark) }
+    }
+
+    fun openSettings() {
+        navigateTo(AppDestination.SETTINGS)
+    }
+
+    fun openEditProfile() {
+        navigateTo(AppDestination.EDIT_PROFILE)
+    }
+
+    fun updateProfile(name: String, phone: String, emoji: String, wilayaCode: Int) {
+        repository.updateUserAccount(name, phone, emoji, wilayaCode)
+        setWilayaFilter(wilayaCode)
+        val lang = currentLanguage.value
+        emitMessage(if (lang == "ar") "تم حفظ وتحديث بيانات الحساب بنجاح" else "Profile updated successfully")
     }
 
     fun showPersonaSwitcher(show: Boolean) {

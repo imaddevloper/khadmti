@@ -40,6 +40,9 @@ import com.example.ui.screens.RequestsListScreen
 import com.example.ui.screens.ReviewCreateScreen
 import com.example.ui.screens.SearchScreen
 import com.example.ui.screens.SendQuoteScreen
+import com.example.ui.screens.SettingsScreen
+import com.example.ui.screens.SplashScreen
+import com.example.ui.screens.EditProfileScreen
 import com.example.ui.theme.KhidmatiTheme
 import com.example.ui.viewmodel.AppDestination
 import com.example.ui.viewmodel.KhidmatiViewModel
@@ -90,12 +93,18 @@ fun KhidmatiApp(
         AppDestination.CREATE_REQUEST,
         AppDestination.SEND_QUOTE,
         AppDestination.WRITE_REVIEW,
-        AppDestination.VERIFICATION_CENTER -> true
+        AppDestination.VERIFICATION_CENTER,
+        AppDestination.SETTINGS,
+        AppDestination.EDIT_PROFILE -> true
         else -> false
     }
 
     BackHandler(enabled = isSubScreen) {
         when (uiState.currentDestination) {
+            AppDestination.EDIT_PROFILE -> viewModel.navigateTo(AppDestination.SETTINGS)
+            AppDestination.SETTINGS -> viewModel.navigateTo(
+                if (currentUser.role == UserRole.PROVIDER) AppDestination.PROVIDER_DASHBOARD else AppDestination.HOME
+            )
             AppDestination.SEND_QUOTE -> {
                 uiState.selectedRequestId?.let { viewModel.openRequestDetail(it) } ?: viewModel.navigateTo(AppDestination.REQUESTS)
             }
@@ -107,10 +116,10 @@ fun KhidmatiApp(
     }
 
     CompositionLocalProvider(LocalLayoutDirection provides layoutDir) {
-        KhidmatiTheme {
+        KhidmatiTheme(darkTheme = uiState.isDarkMode) {
             Scaffold(
                 topBar = {
-                    if (uiState.currentDestination != AppDestination.LOGIN_ROLE) {
+                    if (uiState.currentDestination != AppDestination.LOGIN_ROLE && uiState.currentDestination != AppDestination.SPLASH) {
                         KhidmatiTopBar(
                             title = AppStrings.appName(currentLang),
                             currentLanguage = currentLang,
@@ -119,6 +128,10 @@ fun KhidmatiApp(
                             canNavigateBack = isSubScreen,
                             onNavigateBack = {
                                 when (uiState.currentDestination) {
+                                    AppDestination.EDIT_PROFILE -> viewModel.navigateTo(AppDestination.SETTINGS)
+                                    AppDestination.SETTINGS -> viewModel.navigateTo(
+                                        if (currentUser.role == UserRole.PROVIDER) AppDestination.PROVIDER_DASHBOARD else AppDestination.HOME
+                                    )
                                     AppDestination.SEND_QUOTE -> {
                                         uiState.selectedRequestId?.let { viewModel.openRequestDetail(it) } ?: viewModel.navigateTo(AppDestination.REQUESTS)
                                     }
@@ -130,17 +143,20 @@ fun KhidmatiApp(
                             },
                             onToggleLanguage = { viewModel.toggleLanguage() },
                             onOpenRoleSwitcher = { viewModel.showPersonaSwitcher(true) },
+                            onOpenSettings = { viewModel.openSettings() },
                             onLogoutClick = { viewModel.logoutToLoginScreen() }
                         )
                     }
                 },
                 bottomBar = {
-                    KhidmatiBottomNav(
-                        currentDestination = uiState.currentDestination,
-                        currentRole = currentUser.role,
-                        currentLanguage = currentLang,
-                        onNavigate = { viewModel.navigateTo(it) }
-                    )
+                    if (uiState.currentDestination != AppDestination.LOGIN_ROLE && uiState.currentDestination != AppDestination.SPLASH) {
+                        KhidmatiBottomNav(
+                            currentDestination = uiState.currentDestination,
+                            currentRole = currentUser.role,
+                            currentLanguage = currentLang,
+                            onNavigate = { viewModel.navigateTo(it) }
+                        )
+                    }
                 },
                 snackbarHost = { SnackbarHost(snackbarHostState) },
                 modifier = Modifier.fillMaxSize()
@@ -148,9 +164,19 @@ fun KhidmatiApp(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(innerPadding)
+                        .then(
+                            if (uiState.currentDestination == AppDestination.SPLASH) Modifier
+                            else Modifier.padding(innerPadding)
+                        )
                 ) {
                     when (uiState.currentDestination) {
+                        AppDestination.SPLASH -> {
+                            SplashScreen(
+                                currentLanguage = currentLang,
+                                onSplashFinished = { viewModel.finishSplash() }
+                            )
+                        }
+
                         AppDestination.LOGIN_ROLE -> {
                             LoginRoleScreen(
                                 currentLanguage = currentLang,
@@ -162,9 +188,6 @@ fun KhidmatiApp(
                                 },
                                 onLoginWorker = { name, phone, tradeId, wCode ->
                                     viewModel.loginAsWorker(name, phone, tradeId, wCode)
-                                },
-                                onLoginAdmin = {
-                                    viewModel.switchUserRole(UserRole.ADMIN)
                                 }
                             )
                         }
@@ -343,6 +366,30 @@ fun KhidmatiApp(
                                 currentLanguage = currentLang,
                                 onSubmitReview = { aptId, rating, comment ->
                                     viewModel.submitReview(aptId, rating, comment)
+                                }
+                            )
+                        }
+
+                        AppDestination.SETTINGS -> {
+                            SettingsScreen(
+                                currentUser = currentUser,
+                                currentLanguage = currentLang,
+                                isDarkMode = uiState.isDarkMode,
+                                onToggleLanguage = { viewModel.toggleLanguage() },
+                                onToggleDarkMode = { viewModel.toggleDarkMode() },
+                                onOpenEditProfile = { viewModel.openEditProfile() },
+                                onLogoutClick = { viewModel.logoutToLoginScreen() }
+                            )
+                        }
+
+                        AppDestination.EDIT_PROFILE -> {
+                            EditProfileScreen(
+                                currentUser = currentUser,
+                                wilayas = wilayas,
+                                currentLanguage = currentLang,
+                                onSaveProfile = { name, phone, emoji, wCode ->
+                                    viewModel.updateProfile(name, phone, emoji, wCode)
+                                    viewModel.navigateTo(AppDestination.SETTINGS)
                                 }
                             )
                         }

@@ -348,9 +348,9 @@ fun HomeScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
-                shape = RoundedCornerShape(18.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                border = BorderStroke(1.dp, KhidmatiBorder),
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                 elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
@@ -372,15 +372,15 @@ fun HomeScreen(
                         Spacer(modifier = Modifier.width(10.dp))
                         Column {
                             Text(
-                                text = if (isArabic) "ضمان الجودة والثقة في خدمتي" else "Khidmati Quality & Trust Guarantee",
+                                text = if (isArabic) "ضمان الجودة والثقة في مهنتي" else "Mihnati Quality & Trust Guarantee",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 14.sp,
-                                color = Color(0xFF0F172A)
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
                                 text = if (isArabic) "معايير صارمة لحماية الزبون والحرفي" else "Strict standards for customer and craftsman",
                                 fontSize = 11.sp,
-                                color = Color(0xFF64748B)
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -414,12 +414,12 @@ fun HomeScreen(
                 Text(
                     text = if (isArabic) "أفضل الحرفيين تقييماً" else "Top-Rated Professionals",
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold),
-                    color = Color(0xFF0F172A)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     text = if (isArabic) "أصحاب الخبرة المعتمدة في مختلف ولايات الجزائر" else "Experienced craftsmen across Algerian Wilayas",
                     fontSize = 12.sp,
-                    color = Color(0xFF64748B)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -461,12 +461,12 @@ private fun ModernCategoryCard(
 
     Card(
         modifier = modifier
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(20.dp))
             .clickable { onClick() }
             .testTag("cat_card_${category.id}"),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, KhidmatiBorder),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.2.dp, MaterialTheme.colorScheme.outline),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Column(
@@ -475,8 +475,8 @@ private fun ModernCategoryCard(
         ) {
             Box(
                 modifier = Modifier
-                    .size(42.dp)
-                    .clip(RoundedCornerShape(12.dp))
+                    .size(44.dp)
+                    .clip(RoundedCornerShape(14.dp))
                     .background(bgColor),
                 contentAlignment = Alignment.Center
             ) {
@@ -493,7 +493,7 @@ private fun ModernCategoryCard(
             Text(
                 text = if (isArabic) category.nameAr else category.nameEn,
                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                color = Color(0xFF0F172A),
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1
             )
 
@@ -502,7 +502,7 @@ private fun ModernCategoryCard(
             Text(
                 text = if (isArabic) category.descriptionAr else category.descriptionEn,
                 fontSize = 11.sp,
-                color = Color(0xFF64748B),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 2,
                 lineHeight = 15.sp
             )
@@ -534,12 +534,12 @@ private fun TrustRow(title: String, subtitle: String, color: Color) {
                 text = title,
                 fontWeight = FontWeight.Bold,
                 fontSize = 12.sp,
-                color = Color(0xFF1E293B)
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 text = subtitle,
                 fontSize = 11.sp,
-                color = Color(0xFF64748B),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 lineHeight = 15.sp
             )
         }
@@ -558,15 +558,15 @@ fun ModernProviderCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(20.dp))
             .clickable { onClick() }
             .testTag("modern_pro_card_${provider.id}"),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, KhidmatiBorder),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.2.dp, MaterialTheme.colorScheme.outline),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
-        Column(modifier = Modifier.padding(14.dp)) {
+        Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -593,20 +593,20 @@ fun ModernProviderCard(
                     Text(
                         text = provider.displayName,
                         style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                        color = Color(0xFF0F172A)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector = Icons.Default.LocationOn,
                             contentDescription = null,
-                            tint = Color(0xFF64748B),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(13.dp)
                         )
                         Spacer(modifier = Modifier.width(3.dp))
                         Text(
                             text = if (isArabic) "${provider.communeNameAr}، ${provider.wilayaNameAr}" else "${provider.communeNameEn}, ${provider.wilayaNameEn}",
                             fontSize = 12.sp,
-                            color = Color(0xFF64748B)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -622,7 +622,7 @@ fun ModernProviderCard(
             Text(
                 text = if (isArabic) provider.bioAr else provider.bioEn,
                 fontSize = 12.sp,
-                color = Color(0xFF475569),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 2,
                 lineHeight = 17.sp
             )
@@ -665,7 +665,7 @@ fun ModernProviderCard(
                     Text(
                         text = "(${provider.reviewCount} ${if (isArabic) "تقييم" else "reviews"})",
                         fontSize = 12.sp,
-                        color = Color(0xFF64748B)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 

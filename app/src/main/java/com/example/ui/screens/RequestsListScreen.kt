@@ -115,11 +115,12 @@ fun RequestsListScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
-                        .clip(RoundedCornerShape(14.dp))
+                        .clip(RoundedCornerShape(18.dp))
                         .clickable { onRequestClick(req.id) }
                         .testTag("request_item_${req.id}"),
-                    shape = RoundedCornerShape(14.dp),
+                    shape = RoundedCornerShape(18.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                     elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
                 ) {
                     Column(modifier = Modifier.padding(14.dp)) {

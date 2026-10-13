@@ -16,10 +16,10 @@ object AppStrings {
         if (isRtl(lang)) LayoutDirection.Rtl else LayoutDirection.Ltr
 
     fun appName(lang: String): String =
-        if (lang == "ar") "خدمتي" else "Khidmati"
+        if (lang == "ar") "مهنتي" else "Mihnati"
 
     fun tagline(lang: String): String =
-        if (lang == "ar") "سوق الخدمات المحلية الموثوق في الجزائر" else "Trusted Local Services Marketplace in Algeria"
+        if (lang == "ar") "منصة الحرفيين والخدمات المنزلية عبر 69 ولاية" else "Algeria's Leading Craftsmen & Home Services across 69 Wilayas"
 
     // Navigation
     fun navHome(lang: String): String = if (lang == "ar") "الرئيسية" else "Home"

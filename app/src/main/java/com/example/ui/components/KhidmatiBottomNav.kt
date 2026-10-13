@@ -1,20 +1,20 @@
 package com.example.ui.components
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.AdminPanelSettings
 import androidx.compose.material.icons.filled.Badge
-import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.ChatBubbleOutline
 import androidx.compose.material.icons.filled.Dashboard
-import androidx.compose.material.icons.filled.Engineering
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.ListAlt
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -24,7 +24,9 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
@@ -32,10 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.model.UserRole
-import com.example.ui.i18n.AppStrings
-import com.example.ui.theme.KhidmatiBorder
 import com.example.ui.theme.KhidmatiPrimary
-import com.example.ui.theme.KhidmatiPrimaryHover
 import com.example.ui.theme.KhidmatiPrimarySurface
 import com.example.ui.theme.KhidmatiSecondary
 import com.example.ui.theme.KhidmatiSecondarySurface
@@ -55,15 +54,15 @@ fun KhidmatiBottomNav(
     currentLanguage: String,
     onNavigate: (AppDestination) -> Unit
 ) {
-    // Hide navigation bar on the initial Login & Role selection screen
+    // Hide navigation bar on the Login / Role selection screen
     if (currentDestination == AppDestination.LOGIN_ROLE) {
         return
     }
 
     val isArabic = currentLanguage == "ar"
 
+    // Strictly two user types: Worker (عامل) and Customer (زبون)
     val items = when (currentRole) {
-        // Dedicated Menu for Workers / Providers (العامل وصاحب العمل)
         UserRole.PROVIDER -> listOf(
             NavItem(
                 destination = AppDestination.PROVIDER_DASHBOARD,
@@ -97,35 +96,6 @@ fun KhidmatiBottomNav(
             )
         )
 
-        // Admin Menu
-        UserRole.ADMIN -> listOf(
-            NavItem(
-                destination = AppDestination.HOME,
-                icon = Icons.Default.Home,
-                labelText = if (isArabic) "الرئيسية" else "Home",
-                testTag = "nav_admin_home"
-            ),
-            NavItem(
-                destination = AppDestination.SEARCH,
-                icon = Icons.Default.Search,
-                labelText = if (isArabic) "الحرفيين" else "Pros",
-                testTag = "nav_admin_search"
-            ),
-            NavItem(
-                destination = AppDestination.ADMIN_CENTER,
-                icon = Icons.Default.AdminPanelSettings,
-                labelText = if (isArabic) "مركز الرقابة" else "Admin",
-                testTag = "nav_admin_center"
-            ),
-            NavItem(
-                destination = AppDestination.MESSAGES,
-                icon = Icons.Default.ChatBubbleOutline,
-                labelText = if (isArabic) "الرسائل" else "Messages",
-                testTag = "nav_admin_messages"
-            )
-        )
-
-        // Dedicated Menu for Customers (الزبون)
         else -> listOf(
             NavItem(
                 destination = AppDestination.HOME,
@@ -148,7 +118,7 @@ fun KhidmatiBottomNav(
             NavItem(
                 destination = AppDestination.APPOINTMENTS,
                 icon = Icons.Default.CalendarMonth,
-                labelText = if (isArabic) "مواعيدي" else "Appointments",
+                labelText = if (isArabic) "مواعيدي" else "Schedule",
                 testTag = "nav_customer_appointments"
             ),
             NavItem(
@@ -161,17 +131,28 @@ fun KhidmatiBottomNav(
     }
 
     Surface(
-        color = Color.White,
-        shadowElevation = 8.dp,
-        border = BorderStroke(1.dp, KhidmatiBorder)
+        color = MaterialTheme.colorScheme.surface,
+        shadowElevation = 12.dp,
+        shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
     ) {
         NavigationBar(
             modifier = Modifier.navigationBarsPadding(),
-            containerColor = Color.White,
+            containerColor = MaterialTheme.colorScheme.surface,
             tonalElevation = 0.dp
         ) {
+            val activeColor = if (currentRole == UserRole.PROVIDER) KhidmatiSecondary else KhidmatiPrimary
+            val activeContainer = if (currentRole == UserRole.PROVIDER)
+                KhidmatiSecondary.copy(alpha = 0.15f)
+            else
+                KhidmatiPrimary.copy(alpha = 0.15f)
+
             items.forEach { item ->
                 val isSelected = currentDestination == item.destination
+
                 NavigationBarItem(
                     selected = isSelected,
                     onClick = { onNavigate(item.destination) },
@@ -190,11 +171,11 @@ fun KhidmatiBottomNav(
                         )
                     },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = if (currentRole == UserRole.PROVIDER) KhidmatiSecondary else KhidmatiPrimaryHover,
-                        selectedTextColor = if (currentRole == UserRole.PROVIDER) KhidmatiSecondary else KhidmatiPrimaryHover,
-                        indicatorColor = if (currentRole == UserRole.PROVIDER) KhidmatiSecondarySurface else KhidmatiPrimarySurface,
-                        unselectedIconColor = Color(0xFF64748B),
-                        unselectedTextColor = Color(0xFF64748B)
+                        selectedIconColor = activeColor,
+                        selectedTextColor = activeColor,
+                        indicatorColor = activeContainer,
+                        unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
                     ),
                     modifier = Modifier.testTag(item.testTag)
                 )

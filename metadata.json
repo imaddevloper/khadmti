@@ -1,6 +1,8 @@
 {
-  "name": "Khidmati",
-  "description": "Bilingual local-services marketplace for Algeria connecting customers with verified service providers.",
+  "name": "Mihnati",
+  "description": "Algerian professional craftsmanship and home services platform connecting clients and verified skilled workers across all 69 wilayas.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

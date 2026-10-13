@@ -3,6 +3,6 @@
     <item
         android:width="66dp"
         android:height="66dp"
-        android:drawable="@drawable/khidmati_logo_1791927071235"
+        android:drawable="@drawable/mihnati_app_icon_1791931865125"
         android:gravity="center" />
 </layer-list>
