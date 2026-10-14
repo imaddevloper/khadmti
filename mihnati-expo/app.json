@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "Mihnati",
+    "slug": "mihnati",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "android": {
+      "package": "com.aistudio.khidmati.market"
+    },
+    "splash": {
+      "backgroundColor": "#F5F7F2"
+    },
+    "experiments": {
+      "typedRoutes": false
+    }
+  }
+}
